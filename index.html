@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Shark Reef Defense</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d4a5a">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png">
+<style>
+html, body, #canvas { margin: 0; padding: 0; border: 0; }
+html, body { width: 100%; height: 100%; background: #0d4a5a; overflow: hidden; touch-action: none; overscroll-behavior: none; }
+#canvas { display: block; }
+#canvas:focus { outline: none; }
+#status { position: absolute; inset: 0; background: #0d4a5a; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ffe9a8; font: 600 24px system-ui, sans-serif; }
+#status-progress { width: min(320px, 70%); margin-top: 16px; accent-color: #ffe9a8; }
+#status-notice { display: none; margin: 1rem 2rem; text-align: center; font-size: 16px; }
+</style>
+</head>
+<body>
+<canvas id="canvas" aria-label="Shark Reef Defense"></canvas>
+<div id="status">SHARK REEF DEFENSE<progress id="status-progress"></progress><div id="status-notice"></div></div>
+<script src="phone-loader.js"></script>
+<script src="index.js"></script>
+<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":1047360,"index.wasm":43699190},"focusCanvas":false,"gdextensionLibs":[]};
+const engine = new Engine(GODOT_CONFIG);
+const status = document.getElementById('status');
+const progress = document.getElementById('status-progress');
+const notice = document.getElementById('status-notice');
+const missing = Engine.getMissingFeatures({ threads: false });
+function fail(message) {
+  progress.style.display = 'none';
+  notice.style.display = 'block';
+  notice.textContent = message;
+}
+if (missing.length !== 0) {
+  fail('Your browser is missing: ' + missing.join(', '));
+} else {
+  engine.startGame({
+    onProgress: (current, total) => {
+      if (current > 0 && total > 0) { progress.value = current; progress.max = total; }
+    },
+  }).then(() => status.remove(), (err) => fail(err instanceof Error ? err.message : String(err)));
+}
+</script>
+</body>
+</html>
